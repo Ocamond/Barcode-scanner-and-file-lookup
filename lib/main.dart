@@ -1,10 +1,16 @@
+import 'expandable_fab.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(SimpleApp());
+void main() => runApp(const Simplelist());
 
-class SimpleApp extends StatelessWidget {
-  SimpleApp({Key? key}) : super(key: key);
+class Simplelist extends StatefulWidget {
+  const Simplelist({Key? key}) : super(key: key);
 
+  @override
+  State<Simplelist> createState() => SimplelistState();
+}
+
+class SimplelistState extends State<Simplelist> {
   final titles = ["List 1"];
   final subtitles = ["details for List 1"];
   final icons = [Icons.ac_unit];
@@ -12,6 +18,7 @@ class SimpleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: const Text("Simple List App"),
@@ -26,15 +33,13 @@ class SimpleApp extends StatelessWidget {
                   onTap: () => print("Gedrückt"),
                   title: SelectableText(titles[index]),
                   subtitle: SelectableText(subtitles[index]),
+                  trailing: Icon(icons[index]),
                 ),
               );
             },
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => print("Hakan"),
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton: const ExampleExpandableFab(),
       ),
     );
   }
