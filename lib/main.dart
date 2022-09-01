@@ -1,5 +1,6 @@
-import 'expandable_fab.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 void main() => runApp(const Simplelist());
 
@@ -12,8 +13,27 @@ class Simplelist extends StatefulWidget {
 
 class SimplelistState extends State<Simplelist> {
   final titles = ["List 1"];
-  final subtitles = ["details for List 1"];
   final icons = [Icons.ac_unit];
+
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      titles.add(barcodeScanRes);
+      icons.add(Icons.accessibility_outlined);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +50,21 @@ class SimplelistState extends State<Simplelist> {
             itemBuilder: (context, index) {
               return Card(
                 child: ListTile(
-                  onTap: () => print("Gedrückt"),
+                  onTap: () => print(titles[index]),
                   title: SelectableText(titles[index]),
-                  subtitle: SelectableText(subtitles[index]),
                   trailing: Icon(icons[index]),
                 ),
               );
             },
           ),
         ),
-        floatingActionButton: const ExampleExpandableFab(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            scanBarcodeNormal();
+          },
+          backgroundColor: Colors.blue,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
