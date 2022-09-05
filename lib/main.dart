@@ -14,7 +14,7 @@ class Simplelist extends StatefulWidget {
 class SimplelistState extends State<Simplelist> {
   final titles = ["List 1"];
   final icons = [Icons.ac_unit];
-
+  
   Future<void> scanBarcodeNormal() async {
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -30,8 +30,8 @@ class SimplelistState extends State<Simplelist> {
     if (!mounted) return;
 
     setState(() {
-      titles.add(barcodeScanRes);
-      icons.add(Icons.accessibility_outlined);
+        titles.add(barcodeScanRes);
+        icons.add(Icons.accessibility_outlined);
     });
   }
 
@@ -48,11 +48,30 @@ class SimplelistState extends State<Simplelist> {
             separatorBuilder: (context, index) => const Divider(),
             itemCount: titles.length,
             itemBuilder: (context, index) {
-              return Card(
-                child: ListTile(
-                  onTap: () => print(titles[index]),
-                  title: SelectableText(titles[index]),
-                  trailing: Icon(icons[index]),
+              return Dismissible(
+                key: UniqueKey(),
+                direction: DismissDirection.endToStart,
+                onDismissed: (_) {
+                  setState(() {
+                    titles.removeAt(index);
+                    icons.removeAt(index);
+                  });
+                },
+                child: Card(
+                  child: ListTile(
+                    onTap: () => print(titles[index]),
+                    title: Text(titles[index]),
+                    trailing: const Icon(Icons.arrow_back),
+                  ),
+                ),
+                background: Container(
+                  decoration: const BoxDecoration(color: Colors.red),
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  alignment: Alignment.centerRight,
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
                 ),
               );
             },
