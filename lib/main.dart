@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 void main() => runApp(const MaterialApp(home: Simplelist()));
 
@@ -14,12 +13,13 @@ class Simplelist extends StatefulWidget {
 class SimplelistState extends State<Simplelist> {
   final titles = ["List 1"];
   final icons = [Icons.ac_unit];
+  String barcodeScanRes = "debug";
 
   Future<void> scanBarcodeNormal() async {
-    String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      // * Comment out because of debuging
+      // barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
@@ -35,8 +35,8 @@ class SimplelistState extends State<Simplelist> {
     if (barcodeScanRes.isNotEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const AlertDialog(
-          title: Text("Hakan"),
+        builder: (context) => SimpleDialog(
+          title: Text(barcodeScanRes),
         ),
       );
     }
@@ -45,6 +45,25 @@ class SimplelistState extends State<Simplelist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              child: Text("Navigationsmenü"),
+            ),
+            ListTile(
+              title: const Text("Homepage"),
+              onTap: () => Navigator.pop(context),
+              trailing: const Icon(Icons.home),
+            ),
+            const ListTile(
+              title: Text("Einstellungen"),
+              trailing: Icon(Icons.settings),
+            )
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text("Simple List App"),
       ),
@@ -62,13 +81,6 @@ class SimplelistState extends State<Simplelist> {
                   icons.removeAt(index);
                 });
               },
-              child: Card(
-                child: ListTile(
-                  onTap: () => print(titles[index]),
-                  title: Text(titles[index]),
-                  trailing: const Icon(Icons.arrow_back),
-                ),
-              ),
               background: Container(
                 decoration: const BoxDecoration(color: Colors.red),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -76,6 +88,12 @@ class SimplelistState extends State<Simplelist> {
                 child: const Icon(
                   Icons.delete,
                   color: Colors.white,
+                ),
+              ),
+              child: Card(
+                child: ListTile(
+                  title: Text(titles[index]),
+                  trailing: const Icon(Icons.arrow_back),
                 ),
               ),
             );
